@@ -287,56 +287,210 @@ function TiltCard({ children, onClick, onMouseEnter }: { children: React.ReactNo
 // Project 1: YOLO Object Detection Demo
 function YoloDemo() {
   const [detecting, setDetecting] = useState(true);
-  
-  const targets = [
-    { x: 18, y: 15, w: 24, h: 18, label: "Drone-Cam", conf: "94%" },
-    { x: 48, y: 42, w: 10, h: 9, label: "Vehicle", conf: "91%" },
-    { x: 64, y: 35, w: 12, h: 8, label: "Vehicle", conf: "88%" },
-    { x: 30, y: 60, w: 32, h: 28, label: "Building", conf: "96%" },
-  ];
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = canvas.width = 480;
+    let height = canvas.height = 270;
+
+    // Vector map outline elements
+    const roads = [
+      { x1: 0, y1: 135, x2: 480, y2: 135 },
+      { x1: 240, y1: 0, x2: 240, y2: 270 }
+    ];
+
+    const buildings = [
+      { x: 50, y: 30, w: 80, h: 60, label: "Structure A" },
+      { x: 320, y: 160, w: 90, h: 70, label: "Structure B" }
+    ];
+
+    // Real-time moving targets
+    const targets = [
+      { id: "Drone-Cam", type: "Drone", x: 120, y: 80, speedX: 0.8, speedY: 0.5, size: 8, color: "#4AFFB8" },
+      { id: "Vehicle-Alpha", type: "Vehicle", x: 20, y: 135, speedX: 1.2, speedY: 0, size: 6, color: "#38BDF8" },
+      { id: "Vehicle-Beta", type: "Vehicle", x: 240, y: 20, speedX: 0, speedY: 1.0, size: 6, color: "#38BDF8" }
+    ];
+
+    let scanY = 0;
+
+    const render = () => {
+      // Background grid base
+      ctx.fillStyle = "#0c0c0c";
+      ctx.fillRect(0, 0, width, height);
+
+      // Radial vignette lighting
+      const lightGrad = ctx.createRadialGradient(width / 2, height / 2, 50, width / 2, height / 2, 240);
+      lightGrad.addColorStop(0, "rgba(0, 208, 132, 0.03)");
+      lightGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = lightGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      // Grid Pattern
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
+      ctx.lineWidth = 1;
+      const gridSize = 20;
+      for (let x = 0; x < width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      // Draw Roads
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.lineWidth = 16;
+      roads.forEach(r => {
+        ctx.beginPath();
+        ctx.moveTo(r.x1, r.y1);
+        ctx.lineTo(r.x2, r.y2);
+        ctx.stroke();
+      });
+
+      // Road dash markers
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 6]);
+      roads.forEach(r => {
+        ctx.beginPath();
+        ctx.moveTo(r.x1, r.y1);
+        ctx.lineTo(r.x2, r.y2);
+        ctx.stroke();
+      });
+      ctx.setLineDash([]); // Reset
+
+      // Outlined structures
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+      ctx.lineWidth = 1.5;
+      buildings.forEach(b => {
+        ctx.strokeRect(b.x, b.y, b.w, b.h);
+        ctx.fillStyle = "rgba(0, 208, 132, 0.01)";
+        ctx.fillRect(b.x, b.y, b.w, b.h);
+      });
+
+      // Move & render targets
+      targets.forEach(t => {
+        t.x += t.speedX;
+        t.y += t.speedY;
+
+        // Wrap screens
+        if (t.x > width) t.x = 0;
+        if (t.y > height) t.y = 0;
+
+        // Draw physical point
+        ctx.fillStyle = t.color;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw bounding boxes when YOLO is active
+        if (detecting) {
+          const boxSize = t.size * 3.5;
+          const left = t.x - boxSize / 2;
+          const top = t.y - boxSize / 2;
+
+          // Box borders
+          ctx.strokeStyle = "#00D084";
+          ctx.lineWidth = 1.2;
+          ctx.strokeRect(left, top, boxSize, boxSize);
+
+          // Corner Brackets
+          ctx.strokeStyle = "#FFFFFF";
+          ctx.lineWidth = 1.2;
+          const bLen = 4;
+          // TL
+          ctx.beginPath(); ctx.moveTo(left, top + bLen); ctx.lineTo(left, top); ctx.lineTo(left + bLen, top); ctx.stroke();
+          // TR
+          ctx.beginPath(); ctx.moveTo(left + boxSize - bLen, top); ctx.lineTo(left + boxSize, top); ctx.lineTo(left + boxSize, top + bLen); ctx.stroke();
+          // BL
+          ctx.beginPath(); ctx.moveTo(left, top + boxSize - bLen); ctx.lineTo(left, top + boxSize); ctx.lineTo(left + bLen, top + boxSize); ctx.stroke();
+          // BR
+          ctx.beginPath(); ctx.moveTo(left + boxSize - bLen, top + boxSize); ctx.lineTo(left + boxSize, top + boxSize); ctx.lineTo(left + boxSize, top + boxSize - bLen); ctx.stroke();
+
+          // Text metrics overlay
+          ctx.fillStyle = "#00D084";
+          ctx.font = "bold 7px monospace";
+          const conf = (91 + (t.x % 8)).toFixed(1); // realistic noise conf
+          ctx.fillText(`${t.id} ${conf}%`, left, top - 4);
+          
+          ctx.fillStyle = "rgba(0, 208, 132, 0.6)";
+          ctx.font = "5.5px monospace";
+          ctx.fillText(`x:${t.x.toFixed(0)} y:${t.y.toFixed(0)}`, left, top + boxSize + 8);
+        }
+      });
+
+      // Build static locks when active
+      if (detecting) {
+        buildings.forEach(b => {
+          ctx.strokeStyle = "rgba(239, 68, 68, 0.6)";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(b.x - 2, b.y - 2, b.w + 4, b.h + 4);
+          
+          ctx.fillStyle = "rgba(239, 68, 68, 0.8)";
+          ctx.font = "bold 6.5px monospace";
+          ctx.fillText(`STATIC_LOCK: ${b.label} [99%]`, b.x - 2, b.y - 6);
+        });
+      }
+
+      // Horizontal scanner laser
+      scanY = (scanY + 1.2) % height;
+      ctx.strokeStyle = "rgba(0, 208, 132, 0.25)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, scanY);
+      ctx.lineTo(width, scanY);
+      ctx.stroke();
+
+      // Scanner glow trail
+      const grad = ctx.createLinearGradient(0, scanY - 40, 0, scanY);
+      grad.addColorStop(0, "rgba(0, 208, 132, 0)");
+      grad.addColorStop(1, "rgba(0, 208, 132, 0.08)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, scanY - 40, width, 40);
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [detecting]);
 
   return (
     <div className="flex flex-col h-full space-y-4">
-      <div className="relative flex-grow bg-black/60 border border-white/5 rounded-xl overflow-hidden flex items-center justify-center min-h-[240px] aspect-video">
-        {/* Radar grids */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
-        <div className="absolute inset-0 bg-[#00D084]/5 mix-blend-overlay" />
+      <div className="relative flex-grow bg-black border border-white/5 rounded-xl overflow-hidden flex items-center justify-center min-h-[240px] aspect-video">
+        <canvas ref={canvasRef} className="w-full h-full block" />
         
-        {/* Hud status */}
-        <div className="absolute top-3 left-3 flex items-center space-x-1.5 z-20">
-          <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
-          <span className="text-[8px] font-mono text-white/80 uppercase tracking-widest">AERIAL_FEED_RAW [45 FPS]</span>
+        {/* Status badges */}
+        <div className="absolute top-3 left-3 flex items-center space-x-1.5 z-20 bg-black/75 px-2 py-1 rounded border border-white/5 pointer-events-none">
+          <span className={`w-2 h-2 rounded-full ${detecting ? "bg-rose-500 animate-ping" : "bg-gray-600"}`} />
+          <span className="text-[8px] font-mono text-white/80 uppercase tracking-widest">
+            {detecting ? "AERIAL_FEED_RAW [45 FPS]" : "SYSTEM_STANDBY [0 FPS]"}
+          </span>
         </div>
 
-        {/* Bounding boxes */}
-        {detecting && targets.map((target, idx) => (
-          <div 
-            key={idx}
-            className="absolute border border-rose-500 bg-rose-500/10 transition-all duration-300"
-            style={{ 
-              left: `${target.x}%`, 
-              top: `${target.y}%`, 
-              width: `${target.w}%`, 
-              height: `${target.h}%` 
-            }}
-          >
-            <span className="absolute -top-3.5 left-0 bg-rose-500 text-white text-[8px] px-1 font-mono rounded tracking-tight whitespace-nowrap">
-              {target.label} {target.conf}
-            </span>
-            <div className="absolute -top-[1px] -left-[1px] w-1 h-1 border-t border-l border-white" />
-            <div className="absolute -top-[1px] -right-[1px] w-1 h-1 border-t border-r border-white" />
-            <div className="absolute -bottom-[1px] -left-[1px] w-1 h-1 border-b border-l border-white" />
-            <div className="absolute -bottom-[1px] -right-[1px] w-1 h-1 border-b border-r border-white" />
+        {detecting && (
+          <div className="absolute top-3 right-3 bg-[#00D084]/15 border border-[#00D084]/30 px-2 py-1 rounded text-[8px] font-mono text-accent uppercase tracking-widest animate-pulse pointer-events-none">
+            YOLOv8_ACTIVE_TRACKING
           </div>
-        ))}
-
-        <div className="absolute w-6 h-6 border border-white/20 rounded-full flex items-center justify-center pointer-events-none">
-          <div className="w-0.5 h-0.5 bg-rose-500 rounded-full" />
-        </div>
+        )}
       </div>
 
       <div className="flex items-center justify-between bg-white/2 border border-white/5 p-3 rounded-lg">
-        <span className="text-[10px] font-mono text-gray-400">YOLOv8 & CLAHE Enhancement</span>
+        <span className="text-[10px] font-mono text-gray-400">YOLOv8 & CLAHE Inference Pipeline</span>
         <button 
           onClick={() => setDetecting(!detecting)}
           className={`px-3 py-1.5 text-[9px] font-mono rounded font-bold transition-all cursor-pointer ${
