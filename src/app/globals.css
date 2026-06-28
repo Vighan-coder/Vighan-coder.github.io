@@ -349,3 +349,22 @@ html.lenis, html.lenis body {
 :root.light main {
   background-image: none !important;
 }
+
+/* Specific light theme corrections for timeline icons and borders */
+:root.light .timeline-icon {
+  background-color: #F5F0E8 !important; /* light soft cream theme background */
+  border-color: rgba(61, 122, 92, 0.25) !important;
+  box-shadow: none !important; /* remove neon glow shadow */
+}
+
+:root.light .timeline-icon.border-accent {
+  border-color: #3D7A5C !important;
+}
+
+:root.light .timeline-icon * {
+  color: #3D7A5C !important; /* sage green icons */
+}
+
+:root.light .border-l-2.border-white\/5 {
+  border-color: rgba(61, 122, 92, 0.15) !important; /* light sage timeline vertical line */
+}

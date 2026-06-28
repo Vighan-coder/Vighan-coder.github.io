@@ -61,7 +61,7 @@ export default function CareerPage() {
           className="relative group"
         >
           {/* Node Icon indicator */}
-          <div className="absolute -left-[50px] sm:-left-[66px] top-1.5 w-9 h-9 rounded-xl bg-[#050505] border border-white/10 flex items-center justify-center group-hover:border-accent/40 transition-colors">
+          <div className="absolute -left-[50px] sm:-left-[66px] top-1.5 w-9 h-9 rounded-xl bg-[#050505] border border-white/10 flex items-center justify-center group-hover:border-accent/40 transition-colors timeline-icon">
             <GraduationCap className="w-4 h-4 text-[#9CA3AF] group-hover:text-accent transition-colors" />
           </div>
 
@@ -99,7 +99,7 @@ export default function CareerPage() {
           className="relative group"
         >
           {/* Active node glowing indicator */}
-          <div className="absolute -left-[50px] sm:-left-[66px] top-1.5 w-9 h-9 rounded-xl bg-black border-2 border-accent flex items-center justify-center shadow-[0_0_15px_rgba(0,208,132,0.4)]">
+          <div className="absolute -left-[50px] sm:-left-[66px] top-1.5 w-9 h-9 rounded-xl bg-black border-2 border-accent flex items-center justify-center shadow-[0_0_15px_rgba(0,208,132,0.4)] timeline-icon">
             <Briefcase className="w-4 h-4 text-accent animate-pulse" />
           </div>
 
