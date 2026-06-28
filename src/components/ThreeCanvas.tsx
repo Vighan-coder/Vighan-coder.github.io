@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo, useEffect } from "react";
+import React, { useRef, useMemo, useEffect, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { MeshReflectorMaterial } from "@react-three/drei";
 import * as THREE from "three";
@@ -75,7 +75,7 @@ function generateParticles(count: number) {
 }
 
 // Particle field that sways, drifts upward, and responds to mouse coordinates
-function Particles({ count = 2500 }) {
+function Particles({ count = 2500, isLight = false }: { count?: number; isLight?: boolean }) {
   const pointsRef = useRef<THREE.Points>(null);
   const pathname = usePathname();
   const transitionBurst = useRef(0);
@@ -148,29 +148,28 @@ function Particles({ count = 2500 }) {
       </bufferGeometry>
       <pointsMaterial
         size={0.05}
-        color="#00D084"
+        color={isLight ? "#3D7A5C" : "#00D084"}
         transparent
-        opacity={0.65}
+        opacity={isLight ? 0.55 : 0.65}
         sizeAttenuation
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
       />
     </points>
   );
 }
 
 // Volumetric lights and reflective ground studio environment
-function StudioScene() {
+function StudioScene({ isLight = false }: { isLight?: boolean }) {
   const pathname = usePathname();
   const spotlightRef = useRef<THREE.SpotLight>(null);
   const glowLightRef = useRef<THREE.PointLight>(null);
   
   const gsapAnimateLight = () => {
-    // Basic JS animation fallback to keep it framework-independent inside standard R3F loops
     let count = 0;
     const interval = setInterval(() => {
       if (spotlightRef.current) {
-        spotlightRef.current.intensity = THREE.MathUtils.lerp(spotlightRef.current.intensity, 1.8, 0.1);
+        spotlightRef.current.intensity = THREE.MathUtils.lerp(spotlightRef.current.intensity, isLight ? 0.8 : 1.8, 0.1);
       }
       count++;
       if (count > 30) clearInterval(interval);
@@ -181,16 +180,16 @@ function StudioScene() {
   useEffect(() => {
     if (spotlightRef.current) {
       // Trigger a brief burst of light intensity on transition
-      spotlightRef.current.intensity = 4.0;
+      spotlightRef.current.intensity = isLight ? 2.0 : 4.0;
       gsapAnimateLight();
     }
-  }, [pathname]);
+  }, [pathname, isLight]);
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     // Soft volumetric light breathing effect
     if (glowLightRef.current) {
-      glowLightRef.current.intensity = 1.0 + Math.sin(t * 0.8) * 0.3;
+      glowLightRef.current.intensity = (isLight ? 0.5 : 1.0) + Math.sin(t * 0.8) * (isLight ? 0.15 : 0.3);
       // Drift light source coordinate slowly
       glowLightRef.current.position.x = Math.sin(t * 0.4) * 1.5;
     }
@@ -198,20 +197,20 @@ function StudioScene() {
 
   return (
     <>
-      {/* Background black studio ambient */}
-      <color attach="background" args={["#050505"]} />
-      <fog attach="fog" args={["#050505", 4, 12]} />
+      {/* Background studio ambient */}
+      <color attach="background" args={[isLight ? "#F5F0E8" : "#050505"]} />
+      <fog attach="fog" args={[isLight ? "#F5F0E8" : "#050505", 4, 12]} />
 
-      <ambientLight intensity={0.05} />
+      <ambientLight intensity={isLight ? 0.65 : 0.05} />
       
-      {/* Soft emerald volumetric lighting sources */}
+      {/* Volumetric lighting sources adapted to theme */}
       <spotLight
         ref={spotlightRef}
         position={[0, 6, -3]}
         angle={0.7}
         penumbra={1}
-        intensity={1.8}
-        color="#00D084"
+        intensity={isLight ? 0.8 : 1.8}
+        color={isLight ? "#3D7A5C" : "#00D084"}
         castShadow
         shadow-bias={-0.0001}
       />
@@ -220,8 +219,8 @@ function StudioScene() {
         ref={glowLightRef}
         position={[0, -0.5, 1]}
         distance={8}
-        intensity={1.2}
-        color="#00D084"
+        intensity={isLight ? 0.5 : 1.2}
+        color={isLight ? "#3D7A5C" : "#00D084"}
       />
 
       {/* Reflective floor mirroring particles and foreground */}
@@ -236,19 +235,19 @@ function StudioScene() {
           depthScale={1}
           minDepthThreshold={0.4}
           maxDepthThreshold={1.4}
-          color="#0d0d0d"
+          color={isLight ? "#EAE3D5" : "#0d0d0d"}
           metalness={0.6}
           mirror={0.5}
         />
       </mesh>
 
       {/* Floating abstract AI sculpture placeholder on Home Page */}
-      {pathname === "/" && <FloatingAvatarPlaceholder />}
+      {pathname === "/" && <FloatingAvatarPlaceholder isLight={isLight} />}
     </>
   );
 }
 
-function FloatingAvatarPlaceholder() {
+function FloatingAvatarPlaceholder({ isLight = false }: { isLight?: boolean }) {
   const meshRef1 = useRef<THREE.Mesh>(null);
   const meshRef2 = useRef<THREE.Mesh>(null);
 
@@ -272,14 +271,14 @@ function FloatingAvatarPlaceholder() {
       <mesh ref={meshRef1}>
         <icosahedronGeometry args={[0.9, 2]} />
         <meshPhysicalMaterial
-          color="#00D084"
-          roughness={0.1}
-          metalness={0.15}
-          transmission={0.85}
-          thickness={1.8}
-          ior={1.45}
+          color={isLight ? "#3D7A5C" : "#00D084"}
+          roughness={0.15}
+          metalness={0.1}
+          transmission={0.8}
+          thickness={1.5}
+          ior={1.4}
           transparent
-          opacity={0.85}
+          opacity={0.8}
         />
       </mesh>
 
@@ -287,17 +286,17 @@ function FloatingAvatarPlaceholder() {
       <mesh ref={meshRef2}>
         <icosahedronGeometry args={[0.55, 1]} />
         <meshBasicMaterial
-          color="#4AFFB8"
+          color={isLight ? "#4FA87F" : "#4AFFB8"}
           wireframe
           transparent
-          opacity={0.35}
+          opacity={0.3}
         />
       </mesh>
 
-      {/* Volumetric orbit rings */}
+      {/* Volumetric orbit rings (elliptical orbital figure stroke) */}
       <mesh rotation={[Math.PI / 4, Math.PI / 4, 0]} position={[0, 0.3, 0]}>
         <torusGeometry args={[1.35, 0.015, 8, 64]} />
-        <meshBasicMaterial color="#00D084" transparent opacity={0.15} />
+        <meshBasicMaterial color={isLight ? "#3D7A5C" : "#00D084"} transparent opacity={isLight ? 0.20 : 0.15} />
       </mesh>
     </group>
   );
@@ -305,8 +304,25 @@ function FloatingAvatarPlaceholder() {
 
 // Main exported Canvas component
 export default function ThreeCanvas() {
+  const [isLight, setIsLight] = useState(false);
+
+  useEffect(() => {
+    const checkTheme = () => {
+      setIsLight(document.documentElement.classList.contains("light"));
+    };
+    checkTheme();
+    
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"]
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="fixed inset-0 w-full h-full -z-10 bg-[#050505] pointer-events-none select-none">
+    <div className={`fixed inset-0 w-full h-full -z-10 transition-colors duration-500 pointer-events-none select-none ${isLight ? "bg-[#F5F0E8]" : "bg-[#050505]"}`}>
       <Canvas
         camera={{ fov: 60, position: [0, 0, 5], near: 0.1, far: 20 }}
         gl={{
@@ -318,8 +334,8 @@ export default function ThreeCanvas() {
         }}
       >
         <React.Suspense fallback={null}>
-          <StudioScene />
-          <Particles count={2200} />
+          <StudioScene isLight={isLight} />
+          <Particles count={2200} isLight={isLight} />
           <CameraRig />
         </React.Suspense>
       </Canvas>
