@@ -235,7 +235,7 @@ function StudioScene({ isLight = false }: { isLight?: boolean }) {
           depthScale={1}
           minDepthThreshold={0.4}
           maxDepthThreshold={1.4}
-          color={isLight ? "#EAE3D5" : "#0d0d0d"}
+          color={isLight ? "#F5F0E8" : "#0d0d0d"}
           metalness={0.6}
           mirror={0.5}
         />

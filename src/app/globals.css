@@ -315,3 +315,37 @@ html.lenis, html.lenis body {
   position: relative !important;
   z-index: 2 !important;
 }
+
+/* ========================================================
+   GLOBAL VIGNETTE & DARK GRADIENT REMOVAL (LIGHT MODE)
+   ======================================================== */
+
+/* 1. Hide overlay elements */
+:root.light .vignette,
+:root.light .bg-vignette,
+:root.light .page-vignette,
+:root.light .dark-overlay,
+:root.light .bottom-fade,
+:root.light .bg-overlay {
+  display: none !important;
+}
+
+/* 2. Hide gradient pseudo-elements */
+:root.light body::after,
+:root.light body::before,
+:root.light #root::after,
+:root.light .layout::after,
+:root.light .site-wrapper::after,
+:root.light main::after,
+:root.light main::before {
+  display: none !important;
+}
+
+/* 3. Strip dark background images */
+:root.light body,
+:root.light #root,
+:root.light .site-wrapper,
+:root.light .layout-wrapper,
+:root.light main {
+  background-image: none !important;
+}
