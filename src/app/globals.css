@@ -396,3 +396,41 @@ html.lenis, html.lenis body {
     display: none !important;
   }
 }
+
+/* ========================================================
+   PRINT STYLING OVERRIDES (CLEAN A4 RESUME GENERATION)
+   ======================================================== */
+@media print {
+  html, body, #root, main, .site-wrapper, .layout-wrapper {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Hide navigation panels, volume knobs, footers, interactive elements, canvas backgrounds */
+  nav,
+  footer,
+  canvas,
+  button,
+  .print-hidden,
+  [class*="Navbar"],
+  [class*="Footer"],
+  [class*="Canvas"] {
+    display: none !important;
+  }
+
+  /* Force the A4 sheet page container to take full width and hide shadows/borders */
+  .w-\[210mm\] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+}

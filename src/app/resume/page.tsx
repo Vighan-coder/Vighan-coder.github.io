@@ -133,7 +133,7 @@ export default function ResumePage() {
       {/* Main Document Viewer */}
       <div 
         ref={viewerRef} 
-        className={`w-full overflow-auto flex justify-center p-6 border border-white/5 bg-black/40 rounded-2xl print:bg-white print:border-none print:p-0 ${
+        className={`w-full overflow-auto flex justify-start md:justify-center p-4 md:p-6 border border-white/5 bg-black/40 rounded-2xl print:bg-white print:border-none print:p-0 ${
           isFullscreen ? "bg-[#050505] p-12 h-screen" : ""
         }`}
       >
@@ -142,7 +142,7 @@ export default function ResumePage() {
         <div 
           style={{ 
             transform: `scale(${zoom})`, 
-            transformOrigin: "top center",
+            transformOrigin: typeof window !== "undefined" && window.innerWidth < 768 ? "top left" : "top center",
             transition: "transform 0.15s ease-out"
           }}
           className="w-[210mm] min-h-[297mm] bg-white text-gray-900 shadow-2xl p-12 space-y-8 print:transform-none print:shadow-none print:p-0 print:w-full print:text-black shrink-0 relative border border-gray-200 print:border-none"
