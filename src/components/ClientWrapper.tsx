@@ -64,13 +64,13 @@ function AppContent({ children }: { children: React.ReactNode }) {
           <Navbar />
           
           {/* Main page transition wrapper */}
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="popLayout">
             <motion.main
               key={pathname}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
               className="relative w-full min-h-screen pt-24 px-4 sm:px-6 lg:px-8 pb-16 flex flex-col"
             >
               {children}
