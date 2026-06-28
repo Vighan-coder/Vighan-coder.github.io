@@ -1164,7 +1164,7 @@ export default function ProjectsPage() {
                 </div>
 
                 {/* Right panel: Tabbed interactive content */}
-                <div className="p-8 bg-[#080808] flex flex-col h-full overflow-hidden">
+                <div className="p-8 bg-[#080808] flex flex-col min-h-[450px] lg:h-full overflow-hidden">
                   
                   {/* Tab Selector */}
                   <div className="flex items-center justify-between border-b border-white/5 pb-3 mb-4 shrink-0">
