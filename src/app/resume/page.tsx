@@ -53,6 +53,22 @@ export default function ResumePage() {
     window.print();
   };
 
+  const handleDownload = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    playClick();
+    try {
+      const response = await fetch("/Vighan_Raj_Verma_Resume.pdf", { method: "HEAD" });
+      if (!response.ok) {
+        e.preventDefault();
+        // Dynamic fallback to native print utility
+        alert("Physical PDF file not found in public folder. Redirecting to native browser print-to-PDF...");
+        window.print();
+      }
+    } catch (err) {
+      e.preventDefault();
+      window.print();
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto w-full space-y-8 relative z-10 pt-8 print:p-0 print:pt-0">
       
@@ -119,7 +135,7 @@ export default function ResumePage() {
           <a 
             href="/Vighan_Raj_Verma_Resume.pdf" 
             download
-            onClick={playClick}
+            onClick={handleDownload}
             onMouseEnter={playHover}
             className="flex items-center space-x-1.5 px-4 py-2 bg-accent text-black font-mono font-bold text-xs rounded-lg hover:bg-[#4AFFB8] transition-colors"
           >
