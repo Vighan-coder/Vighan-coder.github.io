@@ -146,7 +146,11 @@ export default function Navbar() {
           {/* Sound Control Slider & Toggle */}
           <div 
             className="relative"
-            onMouseEnter={() => setShowVolumeSlider(true)}
+            onMouseEnter={() => {
+              if (typeof window !== "undefined" && window.innerWidth > 768) {
+                setShowVolumeSlider(true);
+              }
+            }}
             onMouseLeave={() => setShowVolumeSlider(false)}
           >
             <motion.button
@@ -170,7 +174,7 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 top-11 p-3 bg-[#0F1115] border border-white/10 rounded-xl flex items-center space-x-2 w-32 shadow-xl z-50"
+                  className="absolute right-0 top-11 p-3 bg-[#0F1115] border border-white/10 rounded-xl flex items-center space-x-2 w-32 shadow-xl z-50 volume-slider-popup"
                 >
                   <input
                     type="range"
