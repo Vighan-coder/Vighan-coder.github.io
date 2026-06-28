@@ -12,8 +12,7 @@ import {
   VolumeX, 
   Menu, 
   X, 
-  FileText, 
-  Laptop
+  FileText
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -35,30 +34,26 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   
-  const applyTheme = (t: "dark" | "light" | "system") => {
+  const applyTheme = (t: "dark" | "light") => {
     if (typeof window === "undefined") return;
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
     
     if (t === "light") {
       root.classList.add("light");
-    } else if (t === "dark") {
-      root.classList.add("dark");
     } else {
-      // System mode
-      const systemTheme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-      root.classList.add(systemTheme);
+      root.classList.add("dark");
     }
   };
 
-  // Theme state: dark | light | system (starts as dark on server/client hydration pass)
-  const [theme, setTheme] = useState<"dark" | "light" | "system">("dark");
+  // Theme state: dark | light
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   // Load persisted theme after client mount to prevent hydration mismatch
   useEffect(() => {
     try {
       const savedTheme = localStorage.getItem("portfolio-theme");
-      if (savedTheme === "dark" || savedTheme === "light" || savedTheme === "system") {
+      if (savedTheme === "dark" || savedTheme === "light") {
         const t = setTimeout(() => setTheme(savedTheme), 0);
         return () => clearTimeout(t);
       }
@@ -74,11 +69,7 @@ export default function Navbar() {
 
   const cycleTheme = () => {
     playClick();
-    let nextTheme: "dark" | "light" | "system" = "dark";
-    if (theme === "dark") nextTheme = "light";
-    else if (theme === "light") nextTheme = "system";
-    else nextTheme = "dark";
-
+    const nextTheme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
     try {
       localStorage.setItem("portfolio-theme", nextTheme);
@@ -86,19 +77,6 @@ export default function Navbar() {
       console.warn("localStorage set theme error:", e);
     }
   };
-
-  // Listen to system preference changes if in system mode
-  useEffect(() => {
-    if (theme !== "system") return;
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: light)");
-    const handleChange = () => {
-      applyTheme("system");
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [theme]);
 
   // Hide Navbar when scrolling down, show when scrolling up
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -210,15 +188,32 @@ export default function Navbar() {
 
           {/* Theme Toggle Button */}
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={cycleTheme}
-            className="p-2 rounded-lg bg-white/5 border border-white/10 text-[#9CA3AF] hover:text-accent hover:border-accent/40 transition-colors"
-            aria-label="Cycle Theme"
+            className="relative p-1 rounded-full bg-white/5 border border-white/10 flex items-center justify-between w-14 h-8 cursor-pointer focus:outline-none shrink-0"
+            aria-label="Toggle Theme"
           >
-            {theme === "dark" && <Moon className="w-4.5 h-4.5" />}
-            {theme === "light" && <Sun className="w-4.5 h-4.5 text-amber-400" />}
-            {theme === "system" && <Laptop className="w-4.5 h-4.5" />}
+            {/* Sliding indicator */}
+            <motion.div 
+              layout
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className="absolute w-5 h-5 rounded-full bg-[#00D084] shadow-[0_0_12px_rgba(0,208,132,0.5)]"
+              style={{
+                left: theme === "light" ? "4px" : "28px"
+              }}
+            />
+            {/* Icons */}
+            <span className={`relative z-10 flex items-center justify-center w-5 h-5 transition-colors duration-200 ${
+              theme === "light" ? "text-black" : "text-amber-400/80"
+            } ml-0.5`}>
+              <Sun className="w-3.5 h-3.5" />
+            </span>
+            <span className={`relative z-10 flex items-center justify-center w-5 h-5 transition-colors duration-200 ${
+              theme === "dark" ? "text-black" : "text-blue-300/80"
+            } mr-0.5`}>
+              <Moon className="w-3.5 h-3.5" />
+            </span>
           </motion.button>
 
           {/* Resume Button */}

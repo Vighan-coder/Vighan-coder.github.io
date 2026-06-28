@@ -37,32 +37,16 @@
 }
 
 :root.light {
-  --background: #FAFAFA;
-  --foreground: #111827;
-  --secondary: #F3F4F6;
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --secondary: #F1F5F9;
   --accent: #00A86B;
   --accent-hover: #00D084;
-  --glass-bg: rgba(0, 0, 0, 0.04);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --muted: #4B5563;
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --muted: #475569;
   
   color-scheme: light;
-}
-
-/* System Light Mode Autodetection if not overridden by explicit .dark class */
-@media (prefers-color-scheme: light) {
-  :root:not(.dark) {
-    --background: #FAFAFA;
-    --foreground: #111827;
-    --secondary: #F3F4F6;
-    --accent: #00A86B;
-    --accent-hover: #00D084;
-    --glass-bg: rgba(0, 0, 0, 0.04);
-    --glass-border: rgba(0, 0, 0, 0.1);
-    --muted: #4B5563;
-    
-    color-scheme: light;
-  }
 }
 
 body {
@@ -93,9 +77,9 @@ body {
 }
 
 :root.light .glass-panel-hover:hover {
-  background: rgba(0, 0, 0, 0.06);
-  border-color: rgba(0, 0, 0, 0.18);
-  box-shadow: 0 12px 40px 0 rgba(0, 168, 107, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 168, 107, 0.25);
+  box-shadow: 0 12px 40px 0 rgba(0, 168, 107, 0.12);
 }
 
 /* Custom Scrollbar */
@@ -106,11 +90,14 @@ body {
   background: #050505;
 }
 :root.light ::-webkit-scrollbar-track {
-  background: #FAFAFA;
+  background: #F8FAFC;
 }
 ::-webkit-scrollbar-thumb {
   background: #1F2937;
   border-radius: 5px;
+}
+:root.light ::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
@@ -133,6 +120,9 @@ body {
   z-index: 9999;
   pointer-events: none;
   transform: scaleY(0);
+}
+:root.light .page-transition-overlay {
+  background: #F8FAFC;
 }
 
 /* Audio control UI volume slider customization */
@@ -159,4 +149,86 @@ html.lenis, html.lenis body {
 
 .lenis-scrolling iframe {
   pointer-events: none;
+}
+
+/* ========================================================
+   LIGHT MODE READABILITY CONTRAST OVERRIDES
+   ======================================================== */
+
+:root.light .text-white {
+  color: #0F172A !important;
+}
+
+:root.light .text-gray-300 {
+  color: #334155 !important;
+}
+
+:root.light .text-gray-400 {
+  color: #475569 !important;
+}
+
+:root.light .text-gray-500 {
+  color: #64748B !important;
+}
+
+:root.light .bg-white\/5 {
+  background-color: rgba(15, 23, 42, 0.04) !important;
+}
+
+:root.light .bg-white\/2 {
+  background-color: rgba(15, 23, 42, 0.02) !important;
+}
+
+:root.light .border-white\/5 {
+  border-color: rgba(15, 23, 42, 0.06) !important;
+}
+
+:root.light .border-white\/10 {
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+:root.light .border-white\/15 {
+  border-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+:root.light .bg-\[\#050505\] {
+  background-color: #F8FAFC !important;
+}
+
+:root.light .bg-\[\#0c0c0c\] {
+  background-color: #FFFFFF !important;
+}
+
+:root.light .bg-black\/20 {
+  background-color: rgba(15, 23, 42, 0.04) !important;
+}
+
+:root.light .bg-black\/40 {
+  background-color: rgba(15, 23, 42, 0.02) !important;
+}
+
+:root.light .bg-black\/60 {
+  background-color: rgba(15, 23, 42, 0.05) !important;
+}
+
+:root.light .bg-black\/80 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Keep mock code viewers dark for console readability */
+:root.light .bg-\[\#080808\],
+:root.light .bg-\[\#080808\] * {
+  background-color: #080808 !important;
+  color: #E2E8F0 !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+:root.light .bg-\[\#080808\] span.text-accent,
+:root.light .bg-\[\#080808\] button {
+  color: #00D084 !important;
+}
+
+:root.light .bg-\[\#080808\] button.bg-\[\#00D084\] {
+  background-color: #00D084 !important;
+  color: #000000 !important;
 }
