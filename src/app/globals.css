@@ -368,3 +368,24 @@ html.lenis, html.lenis body {
 :root.light .border-l-2.border-white\/5 {
   border-color: rgba(61, 122, 92, 0.15) !important; /* light sage timeline vertical line */
 }
+
+/* Mobile menu panel and link contrast fixes */
+:root.light .mobile-menu-link {
+  color: #3A3A3A !important;
+}
+:root.light .mobile-menu-link.active {
+  color: #3D7A5C !important;
+  background-color: rgba(61, 122, 92, 0.08) !important;
+}
+:root.light .mobile-menu-link:hover {
+  color: #1A1A1A !important;
+  background-color: rgba(61, 122, 92, 0.05) !important;
+}
+
+/* Dark mode link active background hover corrections */
+.mobile-menu-link.active {
+  background-color: rgba(0, 208, 132, 0.08);
+}
+.mobile-menu-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}

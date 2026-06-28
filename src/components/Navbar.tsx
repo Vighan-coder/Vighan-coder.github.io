@@ -244,6 +244,20 @@ export default function Navbar() {
         </div>
       </motion.nav>
 
+      {/* Dimmer Overlay behind the mobile menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.6 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={() => setMobileMenuOpen(false)}
+            className="fixed inset-0 bg-black z-40 lg:hidden backdrop-blur-[3px]"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Mobile Menu Panel */}
       <AnimatePresence>
         {mobileMenuOpen && (
@@ -252,7 +266,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 w-[92%] z-45 glass-panel border border-white/10 dark:border-white/5 p-6 flex flex-col space-y-4 shadow-2xl lg:hidden max-h-[80vh] overflow-y-auto"
+            className="fixed top-20 left-1/2 -translate-x-1/2 w-[92%] z-45 glass-panel border border-white/10 dark:border-white/5 p-6 flex flex-col space-y-4 shadow-2xl lg:hidden max-h-[80vh] overflow-y-auto bg-[#F5F0E8]/96 dark:bg-[#050505]/96 backdrop-blur-2xl mobile-menu-panel"
           >
             <div className="flex flex-col space-y-3">
               {NAV_ITEMS.map((item) => {
@@ -266,10 +280,10 @@ export default function Navbar() {
                       setMobileMenuOpen(false);
                     }}
                     onMouseEnter={playHover}
-                    className={`px-4 py-2.5 rounded-lg text-sm font-medium tracking-wide transition-all ${
+                    className={`px-4 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all mobile-menu-link ${
                       isActive 
-                        ? "text-[#00D084] bg-white/5 font-semibold" 
-                        : "text-[#9CA3AF] hover:text-white hover:bg-white/5"
+                        ? "active text-[#00D084] dark:text-[#00D084]" 
+                        : "text-[#9CA3AF] hover:text-white"
                     }`}
                   >
                     {item.name}
@@ -290,7 +304,7 @@ export default function Navbar() {
               onMouseEnter={playHover}
               className="w-full"
             >
-              <button className="w-full flex items-center justify-center space-x-2 py-3 text-sm font-mono font-bold tracking-wider text-black bg-[#00D084] rounded-xl">
+              <button className="w-full flex items-center justify-center space-x-2 py-3 text-sm font-mono font-bold tracking-wider text-black bg-[#00D084] rounded-xl cursor-pointer">
                 <FileText className="w-4 h-4" />
                 <span>RESUME</span>
               </button>
