@@ -150,7 +150,7 @@ function Particles({ count = 2500, isLight = false }: { count?: number; isLight?
         size={0.05}
         color={isLight ? "#3D7A5C" : "#00D084"}
         transparent
-        opacity={isLight ? 0.55 : 0.65}
+        opacity={isLight ? 0.25 : 0.65}
         sizeAttenuation
         depthWrite={false}
         blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
