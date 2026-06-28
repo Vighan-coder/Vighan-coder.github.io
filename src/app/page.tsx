@@ -121,7 +121,7 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="text-xs font-mono font-medium tracking-widest text-[#00D084] uppercase"
+          className="text-xs font-mono font-medium tracking-widest text-[#00D084] uppercase hero-label hero-label-top"
         >
           Curiosity to Intelligence
         </motion.p>
@@ -131,7 +131,7 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="text-4xl sm:text-5xl md:text-7xl font-sans font-black tracking-tight text-white uppercase leading-none"
+          className="text-4xl sm:text-5xl md:text-7xl font-sans font-black tracking-tight text-white uppercase leading-none hero-name"
         >
           Vighan Raj Verma
         </motion.h1>
@@ -145,7 +145,7 @@ export default function HomePage() {
               animate={{ y: 0, opacity: 0.8 }}
               exit={{ y: -20, opacity: 0 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="text-base sm:text-lg md:text-xl font-mono text-accent/80 font-semibold uppercase tracking-wide"
+              className="text-base sm:text-lg md:text-xl font-mono text-accent/80 font-semibold uppercase tracking-wide hero-subtitle"
             >
               {SUBTITLES[subtitleIndex]}
             </motion.p>
@@ -157,7 +157,7 @@ export default function HomePage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.7 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto leading-relaxed"
+          className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto leading-relaxed hero-body"
         >
           I build intelligent systems that combine data, machine learning, and computer vision to solve real-world problems. Currently exploring spatial computing, 3D reconstruction and neural rendering.
         </motion.p>

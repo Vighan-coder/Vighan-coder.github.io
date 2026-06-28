@@ -278,7 +278,8 @@ function FloatingAvatarPlaceholder({ isLight = false }: { isLight?: boolean }) {
           thickness={1.5}
           ior={1.4}
           transparent
-          opacity={0.8}
+          opacity={isLight ? 0.15 : 0.8}
+          wireframe={isLight}
         />
       </mesh>
 
