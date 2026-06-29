@@ -18,99 +18,66 @@ interface LoadingScreenProps {
 
 export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [percent, setPercent] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [dimensions, setDimensions] = useState({ width: 1000, height: 800 });
 
   const onCompleteRef = useRef(onComplete);
   useEffect(() => {
     onCompleteRef.current = onComplete;
   }, [onComplete]);
 
-  // Initialize to server-safe defaults to prevent hydration mismatch
-  const [isSkipped, setIsSkipped] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [isMounted, setIsMounted] = useState(false);
-
-  const [dimensions, setDimensions] = useState({ width: 1000, height: 800 });
-
-  // Update dimensions in an async animation frame
   useEffect(() => {
+    setMounted(true);
+    
+    // Set initial size
+    setDimensions({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+
     const handleResize = () => {
-      requestAnimationFrame(() => {
-        setDimensions({
-          width: window.innerWidth,
-          height: window.innerHeight
-        });
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
       });
     };
-    handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
-  useEffect(() => {
-    let visited = false;
-    try {
-      visited = localStorage.getItem("vighan-portfolio-visited") === "true";
-    } catch (e) {
-      console.warn("localStorage get visited error:", e);
-    }
+    // Accumulate percentage over 2.4 seconds loading duration
+    const startTime = Date.now();
+    const duration = 2400;
+    let frameId: number;
+    let timeoutId: NodeJS.Timeout;
 
-    console.log("LoadingScreen: Client mount check. visited =", visited);
-    let timeoutId: NodeJS.Timeout | undefined;
-    let frameId: number | undefined;
+    const updateLoader = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      const nextPercent = Math.floor(easedProgress * 100);
+      setPercent(nextPercent);
 
-    if (visited) {
-      timeoutId = setTimeout(() => {
-        setIsMounted(true);
-        setIsSkipped(true);
-        setIsVisible(false);
-        if (onCompleteRef.current) onCompleteRef.current();
-      }, 0);
-    } else {
-      timeoutId = setTimeout(() => {
-        setIsMounted(true);
-      }, 0);
+      if (progress < 1) {
+        frameId = requestAnimationFrame(updateLoader);
+      } else {
+        timeoutId = setTimeout(() => {
+          setIsVisible(false);
+          if (onCompleteRef.current) onCompleteRef.current();
+        }, 500); // Small pause at 100%
+      }
+    };
 
-      // Accumulate percentage over 2.5 seconds
-      const startTime = Date.now();
-      const duration = 2400; // 2.4 seconds loading duration
-
-      const updateLoader = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        // Add a nice ease to the percentage counting
-        const easedProgress = 1 - Math.pow(1 - progress, 3);
-        const nextPercent = Math.floor(easedProgress * 100);
-        console.log("LoadingScreen: updateLoader loop tick. progress =", progress, "percent =", nextPercent);
-        setPercent(nextPercent);
-
-        if (progress < 1) {
-          frameId = requestAnimationFrame(updateLoader);
-        } else {
-          // Complete loading
-          console.log("LoadingScreen: loader finished, transitioning out...");
-          timeoutId = setTimeout(() => {
-            setIsVisible(false);
-            try {
-              localStorage.setItem("vighan-portfolio-visited", "true");
-            } catch (e) {
-              console.warn("localStorage set visited error:", e);
-            }
-            if (onCompleteRef.current) onCompleteRef.current();
-          }, 500); // Small pause at 100%
-        }
-      };
-
-      frameId = requestAnimationFrame(updateLoader);
-    }
+    frameId = requestAnimationFrame(updateLoader);
 
     return () => {
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(frameId);
       if (timeoutId) clearTimeout(timeoutId);
-      if (frameId) cancelAnimationFrame(frameId);
     };
   }, []);
 
-  if (isSkipped || !isVisible) return null;
+  if (!mounted || !isVisible) return null;
 
   return (
     <AnimatePresence>
@@ -130,7 +97,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
           {/* Floating emerald particles */}
           <div className="absolute inset-0 pointer-events-none">
-            {isMounted && STATIC_PARTICLES.map((p, i) => (
+            {mounted && STATIC_PARTICLES.map((p, i) => (
               <motion.div
                 key={i}
                 initial={{ 
