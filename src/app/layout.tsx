@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vighan Raj Verma | Data Scientist & R&D Intern",
+  title: "VrV Portfolio",
   description: "Portfolio of Vighan Raj Verma, B.Tech Computer Science student at Truba Institute and R&D Intern at IISER Bhopal. Specialized in Data Science, Computer Vision, and Machine Learning.",
   keywords: [
     "Vighan Raj Verma", 

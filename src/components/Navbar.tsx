@@ -106,8 +106,8 @@ export default function Navbar() {
           onMouseEnter={playHover}
           className="flex items-center space-x-2 text-white font-sans text-lg font-bold tracking-wider hover:text-accent transition-colors"
         >
-          <span className="w-8 h-8 rounded-lg bg-accent/20 border border-accent/40 flex items-center justify-center font-extrabold text-accent text-sm logo-box nav-logo-initials">
-            VR
+          <span className="w-8 h-8 rounded-lg bg-accent/20 border border-accent/40 flex items-center justify-center font-extrabold text-accent text-xs logo-box nav-logo-initials">
+            VRV
           </span>
           <span className="hidden sm:inline bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent nav-name navbar-brand-text">Vighan Raj Verma</span>
         </Link>
